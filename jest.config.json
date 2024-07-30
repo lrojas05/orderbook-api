@@ -1,0 +1,24 @@
+{
+  "preset": "ts-jest",
+  "testEnvironment": "node",
+  "collectCoverage": true,
+  "watchPathIgnorePatterns": [],
+  "testMatch": ["<rootDir>/test/**/*.spec.ts"],
+  "collectCoverageFrom": [
+    "<rootDir>/src/**/**/*.ts",
+    "!**/node_modules/**",
+    "!<rootDir>/src/*.ts",
+    "!<rootDir>/src/orderbooks/doc-example/**",
+    "!<rootDir>/src/orderbooks/dto/**"
+    
+  ],
+  "coverageReporters": ["text", "lcov"],
+  "coverageThreshold": {
+    "global": {
+      "branches": 100,
+      "functions": 100,
+      "lines": 100,
+      "statements": 100
+    }
+  }
+}
