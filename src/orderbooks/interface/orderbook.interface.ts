@@ -1,6 +1,4 @@
-export type DataCrypto = [string, string];
-
-export interface OrderBookInt {
+export interface OrderBookIn {
   exchange: string;
   base: string;
   quote: string;

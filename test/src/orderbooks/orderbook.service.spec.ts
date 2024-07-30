@@ -14,20 +14,13 @@ import {
   urlExchange,
 } from '../../../src/orderbooks/dto/doc-example/orderbook.dto';
 
-import { OrderBookInt } from '../../../src/orderbooks/interface/orderbook.interface';
+import { OrderBookIn } from '../../../src/orderbooks/interface/orderbook.interface';
 import { of } from 'rxjs';
-
-jest.mock('@nestjs/axios', () => {
-  return {
-    HttpService: jest.fn().mockImplementation(() => ({
-      get: jest.fn(),
-    })),
-  };
-});
 
 describe('OrderBookService', () => {
   let service: OrderBookService;
   let httpService: HttpService;
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [OrderBookService, HttpService],
@@ -87,7 +80,7 @@ describe('OrderBookService', () => {
             exchange: 'binance',
             base: 'BTC',
             quote: 'USDT',
-          } as OrderBookInt),
+          } as OrderBookIn),
         ).rejects.toThrow(BadRequestException);
       });
     });
@@ -98,7 +91,7 @@ describe('OrderBookService', () => {
           exchange: 'bitmart',
           base: 'BTC',
           quote: 'USDT',
-        } as OrderBookInt);
+        } as OrderBookIn);
         expect(result).toBe('BTC_USDT');
       });
 
@@ -107,17 +100,17 @@ describe('OrderBookService', () => {
           exchange: 'binance',
           base: 'BTC',
           quote: 'USDT',
-        } as OrderBookInt);
+        } as OrderBookIn);
         expect(result).toBe('BTCUSDT');
       });
 
       it('should throw NotFoundException for unsupported exchange', () => {
         expect(() =>
           service['convertPairs']({
-            exchange: 'unknown',
+            exchange: 'visma',
             base: 'BTC',
             quote: 'USDT',
-          } as OrderBookInt),
+          } as OrderBookIn),
         ).toThrow(NotFoundException);
       });
     });
@@ -143,9 +136,9 @@ describe('OrderBookService', () => {
       });
 
       it('should throw NotFoundException for unsupported exchange', () => {
-        expect(() =>
-          service['selectUrlExchange']('unknown', 'BTCUSDT'),
-        ).toThrow(NotFoundException);
+        expect(() => service['selectUrlExchange']('visma', 'BTCUSDT')).toThrow(
+          NotFoundException,
+        );
       });
     });
 
@@ -167,7 +160,7 @@ describe('OrderBookService', () => {
       });
 
       it('should throw an error for unsupported exchange', () => {
-        expect(() => service['orderSnapshot']('unknown', {})).toThrow(Error);
+        expect(() => service['orderSnapshot']('binance', {})).toThrow(Error);
       });
     });
 
@@ -187,7 +180,7 @@ describe('OrderBookService', () => {
       });
 
       it('should throw an error for unsupported exchange', () => {
-        expect(() => service['extractDataByExchange']('unknown', {})).toThrow(
+        expect(() => service['extractDataByExchange']('binance', {})).toThrow(
           Error,
         );
       });

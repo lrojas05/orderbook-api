@@ -6,7 +6,7 @@ import {
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import {
-  OrderBookInt,
+  OrderBookIn,
   OrderBookOut,
   UrlExchange,
 } from './interface/orderbook.interface';
@@ -16,24 +16,24 @@ export class OrderBookService {
   private pairsCache: Record<string, string[]> = {};
   constructor(private readonly httpService: HttpService) {}
 
-  async getPairs(int: OrderBookInt, url: UrlExchange): Promise<string[]> {
-    if (!this.pairsCache[int.exchange]) {
+  async getPairs(input: OrderBookIn, url: UrlExchange): Promise<string[]> {
+    if (!this.pairsCache[input.exchange]) {
       const response = await firstValueFrom(
         this.httpService.get(url.validation),
       );
-      this.pairsCache[int.exchange] = this.extractDataByExchange(
-        int.exchange,
+      this.pairsCache[input.exchange] = this.extractDataByExchange(
+        input.exchange,
         response.data,
       );
     }
-    return this.pairsCache[int.exchange];
+    return this.pairsCache[input.exchange];
   }
 
-  async getSnapshot(int: OrderBookInt): Promise<OrderBookOut> {
+  async getSnapshot(input: OrderBookIn): Promise<OrderBookOut> {
     try {
-      const symbolByExchange = this.convertPairs(int);
-      const url = this.selectUrlExchange(int.exchange, symbolByExchange);
-      const pairs = await this.getPairs(int, url);
+      const symbolByExchange = this.convertPairs(input);
+      const url = this.selectUrlExchange(input.exchange, symbolByExchange);
+      const pairs = await this.getPairs(input, url);
 
       if (!pairs.includes(symbolByExchange)) {
         throw new Error(
@@ -45,7 +45,7 @@ export class OrderBookService {
         this.httpService.get(url.orderBook),
       );
 
-      return this.orderSnapshot(int.exchange, orderBook.data);
+      return this.orderSnapshot(input.exchange, orderBook.data);
     } catch (e) {
       throw new BadRequestException({
         description: e.message,
@@ -53,7 +53,7 @@ export class OrderBookService {
     }
   }
 
-  private convertPairs(int: OrderBookInt): string {
+  private convertPairs(int: OrderBookIn): string {
     switch (int.exchange) {
       case 'bitmart': {
         return int.base.concat('_', int.quote).toUpperCase();
@@ -75,7 +75,7 @@ export class OrderBookService {
     switch (exchange) {
       case 'bitmart': {
         validation = 'https://api-cloud.bitmart.com/spot/v1/symbols';
-        orderBook = `https://api-cloud.bitmart.com/spot/quotation/v3/books?symbol=${symbolByExchange}&limit=20`; // cambiar limite
+        orderBook = `https://api-cloud.bitmart.com/spot/quotation/v3/books?symbol=${symbolByExchange}&limit=20`;
         return {
           validation,
           orderBook,
@@ -84,7 +84,7 @@ export class OrderBookService {
 
       case 'binance': {
         validation = `https://api.binance.com/api/v3/exchangeInfo?symbol=${symbolByExchange}`;
-        orderBook = `https://api.binance.com/api/v3/depth?symbol=${symbolByExchange}&limit=20`; // cambiar limite
+        orderBook = `https://api.binance.com/api/v3/depth?symbol=${symbolByExchange}&limit=20`;
         return {
           validation,
           orderBook,

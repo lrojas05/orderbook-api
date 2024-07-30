@@ -1,10 +1,7 @@
 import { AxiosResponse } from 'axios';
-import {
-  OrderBookInt,
-  OrderBookOut,
-} from '../../interface/orderbook.interface';
+import { OrderBookIn, OrderBookOut } from '../../interface/orderbook.interface';
 
-export const orderBookDtoExample: OrderBookInt = {
+export const orderBookDtoExample: OrderBookIn = {
   exchange: 'binance',
   base: 'BTC',
   quote: 'USD',
