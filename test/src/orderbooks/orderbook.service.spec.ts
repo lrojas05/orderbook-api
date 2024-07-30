@@ -17,6 +17,14 @@ import {
 import { OrderBookIn } from '../../../src/orderbooks/interface/orderbook.interface';
 import { of } from 'rxjs';
 
+jest.mock('@nestjs/axios', () => {
+  return {
+    HttpService: jest.fn().mockImplementation(() => ({
+      get: jest.fn(),
+    })),
+  };
+});
+
 describe('OrderBookService', () => {
   let service: OrderBookService;
   let httpService: HttpService;
