@@ -168,7 +168,7 @@ describe('OrderBookService', () => {
       });
 
       it('should throw an error for unsupported exchange', () => {
-        expect(() => service['orderSnapshot']('binance', {})).toThrow(Error);
+        expect(() => service['orderSnapshot']('visma', {})).toThrow(Error);
       });
     });
 
@@ -188,7 +188,7 @@ describe('OrderBookService', () => {
       });
 
       it('should throw an error for unsupported exchange', () => {
-        expect(() => service['extractDataByExchange']('binance', {})).toThrow(
+        expect(() => service['extractDataByExchange']('visma', {})).toThrow(
           Error,
         );
       });
